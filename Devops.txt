@@ -1,0 +1,1 @@
+Git test commad checking the ssh authentication
