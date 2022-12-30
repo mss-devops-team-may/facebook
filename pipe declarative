@@ -1,0 +1,37 @@
+pipeline{
+    agent any
+    tools {
+  maven 'maven'
+}
+    stages{
+        
+        stage('CheckingoutTheCode'){
+            steps{
+        a        git 'https://github.com/mss-devops-team-may/maven-web-application'
+            }
+        }
+        stage('Build'){
+            steps{
+                sh "mvn clean package"
+            }
+        }
+         stage('SonarQubeReport'){
+            steps{
+                sh "mvn sonar:sonar"
+            }
+        }
+        stage('UploadArtifacts'){
+            steps{
+                sh "mvn deploy"
+            }
+        }
+        stage('DeployToTomcatServer'){
+            steps{
+                sshagent(['86c6448f-80ce-4871-b34b-711ad5e43657']) {
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@15.206.179.241:/opt/apache-tomcat-9.0.70/webapps/"
+} 
+            }
+        }
+    }
+    
+}//
